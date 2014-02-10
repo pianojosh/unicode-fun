@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+ <head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="http://reset5.googlecode.com/hg/reset.min.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <style>
+    *, *:before, *:after {
+        box-sizing: border-box;
+    }
+    .content {
+        font-family: sans-serif;
+        margin-top: 5em;
+        max-width: 35em;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 3em;
+        padding-right: 3em;
+    }
+    
+    h1 {
+        font-size: 1.5em;
+        padding: 0.5em;
+        text-align: center;
+    }
+    
+    label {
+        padding-right: 0.5em;
+        max-width: 20%;
+    }
+    
+    input {
+        display: inline-block;
+        min-width: 80%;
+        max-width: 100%;
+    }
+        
+    .subscript-label, .superscript-label {
+        display: block;
+        margin-bottom: 0.5em;
+    }
+    
+    .subscript-warning, .superscript-warning {
+        margin-left: 1em;
+        font-size: 0.8em;
+        color: red;
+    }
+    
+    .subscript, .superscript {
+        margin-top: 1em;
+        min-height: 3em;
+    }
+  </style>
+  <title>
+   Subscript and superscript
+  </title>
+ </head>
+ <body>
+  <div class="content">
+   <h1>Unicode Subscripts and Superscripts</h1>
+   <label for="source">Original text:</label><input type="text" id="source" placeholder="Put your non upside-down text here" />
+   <div class="subscript">
+     <span class="subscript-label">Subscript:<span class="subscript-warning"></span></span>
+     <span class="subscript-text"></span>
+   </div>
+   <div class="superscript">
+    <span class="superscript-label">Superscript:<span class="superscript-warning"></span></span>
+    <span class="superscript-text"></span>
+   </div>
+  </div>
+ </body>
+ 
+ <script type="text/javascript">
+    $(document).ready(function() {
+        $('#source').on('change keypress paste focus textInput input', process_input);
+        process_input()
+    });
+
+    subscripts = {
+        ' ': ' ',
+        'a': 'ₐ',
+        'e': 'ₑ',
+        'i': 'ᵢ',
+        'j': 'ⱼ',
+        'o': 'ₒ',
+        'r': 'ᵣ',
+        'u': 'ᵤ',
+        'v': 'ᵥ',
+        'x': 'ₓ',
+        '0': '₀',
+        '1': '₁',
+        '2': '₂',
+        '3': '₃',
+        '4': '₄',
+        '5': '₅',
+        '6': '₆',
+        '7': '₇',
+        '8': '₈',
+        '9': '₉',
+        '+': '₊',
+        '-': '₋',
+        '=': '₌',
+        '(': '₍',
+        ')': '₎'            
+    }
+    
+    superscripts = {
+        ' ': ' ',
+        'a': 'ᵃ',
+        'b': 'ᵇ',
+        'c': 'ᶜ',
+        'd': 'ᵈ',
+        'e': 'ᵉ',
+        'f': 'ᶠ',
+        'g': 'ᵍ',
+        'h': 'ʰ',
+        'i': 'ⁱ',
+        'j': 'ʲ',
+        'k': 'ᵏ',
+        'l': 'ˡ',
+        'm': 'ᵐ',
+        'n': 'ⁿ',
+        'o': 'ᵒ',
+        'p': 'ᵖ',
+        'r': 'ʳ',
+        's': 'ˢ',
+        't': 'ᵗ',
+        'u': 'ᵘ',
+        'v': 'ᵛ',
+        'w': 'ʷ',
+        'x': 'ˣ',
+        'y': 'ʸ',
+        'z': 'ᶻ',
+        'A': 'ᴬ',
+        'B': 'ᴮ',
+        'D': 'ᴰ',
+        'E': 'ᴱ',
+        'G': 'ᴳ',
+        'H': 'ᴴ',
+        'I': 'ᴵ',
+        'J': 'ᴶ',
+        'K': 'ᴷ',
+        'L': 'ᴸ',
+        'M': 'ᴹ',
+        'N': 'ᴺ',
+        'O': 'ᴼ',
+        'P': 'ᴾ',
+        'R': 'ᴿ',
+        'T': 'ᵀ',
+        'U': 'ᵁ',
+        'V': 'ⱽ',
+        'W': 'ᵂ',
+        '0': '⁰',
+        '1': '¹',
+        '2': '²',
+        '3': '³',
+        '4': '⁴',
+        '5': '⁵',
+        '6': '⁶',
+        '7': '⁷',
+        '8': '⁸',
+        '9': '⁹',
+        '+': '⁺',
+        '-': '⁻',
+        '=': '⁼',
+        '(': '⁽',
+        ')': '⁾'
+        
+    }
+
+    process_input = function() {
+            subscript_text = ''
+            superscript_text = '';
+            source_text = $('#source').val();
+            missing_subscript = false;
+            missing_superscript = false;
+            for (index in source_text) {
+                character = source_text[index];
+                if (character in subscripts) {
+                    subscript_text += subscripts[character];
+                } else {
+                    missing_subscript = true;
+                }
+                if (character in superscripts) {
+                    superscript_text += superscripts[character];
+                } else {
+                    missing_superscript = true;
+                }
+            }
+            $('.subscript-text').html(subscript_text)
+            $('.superscript-text').html(superscript_text)
+            if (missing_subscript) {
+                $('.subscript-warning').html("Some characters couldn't be converted into subscripts. Blame the abominable ☃.");
+            } else {
+                $('.subscript-warning').html('');
+            }
+            if (missing_superscript) {
+                $('.superscript-warning').html("Some characters couldn't be converted into subscripts. Blame the abominable ☃.");
+            } else {
+                $('.superscript-warning').html('');
+            }
+    }
+ </script>
+</html>
+
